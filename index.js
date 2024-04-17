@@ -53,7 +53,9 @@ app.put('/item/:id', function(req, res){
 //endpoint DELETE => /item/:id
 app.delete('/item/:id', function(req, res){
   const id = req.params.id;
-  delete lista[id - 1]
+  delete lista[id - 1];
+  /*o método abaixo remove o elemento do array, corrige o problema do 'null', mas para utiliza-lo não se deve usar o método delete antes, escolha, ou um ou outro */
+  //lista.splice(id - 1, 1);  
   res.send("Item removido com sucesso " + id)
 });
 
