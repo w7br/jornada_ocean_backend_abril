@@ -33,12 +33,19 @@ app.post('/item', function(req, res){
   res.send("Item adicionado com sucesso " + item);
 });
 
-//endpoint Update => PUT /item
+//endpoint Update => PUT /item/:id
 app.put('/item/:id', function(req, res){
   const id = req.params.id;
   const novoItem = req.body.nome;
   lista[id - 1] = novoItem;
   res.send("Item atualizado com sucesso " + id + ". " + novoItem)
+});
+
+//endpoint DELETE => /item/:id
+app.delete('/item/:id', function(req, res){
+  const id = req.params.id;
+  delete lista[id - 1]
+  res.send("Item removido com sucesso " + id)
 });
 
 app.listen(8000);
