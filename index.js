@@ -26,6 +26,8 @@ async function main() {
     res.send(itens);
   })
 
+
+
   // Endpoint Read By ID -> [GET] /item/:id
   app.get('/item/:id', async function (req, res) {
     // Acessamos o parâmetro de rota ID
@@ -53,6 +55,8 @@ async function main() {
     res.send(item);
   })
 
+
+
   // Endpoint Update -> [PUT] /item/:id
   app.put('/item/:id', function (req, res) {
     // Obtemos o ID do parâmetro de rota
@@ -71,6 +75,8 @@ async function main() {
     res.send('Item atualizado com sucesso: ' + id);
   })
 
+
+
   // Endpoint Delete -> [DELETE] /item/:id
   app.delete('/item/:id', async function (req, res) {
     // Obtemos o ID do parâmetro de rota
@@ -83,6 +89,8 @@ async function main() {
     res.send('Item removido com sucesso: ' + id);
   })
 
+
+  
   app.listen(3000)
 }
 
