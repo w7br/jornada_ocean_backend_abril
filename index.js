@@ -1,64 +1,89 @@
-const express = require('express');
-const app = express(); 
-app.use(express.json());
+const express = require('express')
+const { MongoClient, ObjectId } = require('mongodb')
 
-app.get('/', function (req, res) {
-  res.send('Hello World');
-});
+const dbUrl = 'mongodb+srv://admin:C6fvWv6tUrtQgWiB@cluster0.7h4ejsd.mongodb.net'
+const dbName = 'ocean-jornada-backend'
 
-app.get('/oi', function (req, res) {
-   res.send('Olá Mundo');
-});
+async function main() {
+  console.log('Conectando ao banco de dados...');
+  const client = new MongoClient(dbUrl);
+  await client.connect();
+  console.log('Banco de dados conectado com sucesso!');
 
-// lista de itens
-const lista = ['NextJS', 'NodeJS', 'Firebase'];
+  const app = express();
+  // Especificamos que o corpo da requisição será em JSON
+  app.use(express.json());
 
+  const db = client.db(dbName);
+  const collection = db.collection('item');
 
+  // Endpoint Read All -> [GET] /item
+  app.get('/item', async function (req, res) {
+    // Buscamos todos os documentos na collection
+    const itens = await collection.find().toArray();
 
-//endpoit Read All => GET /item
-app.get('/item', function(req, res){
-  res.send(lista)
-});
+    // Enviamos como resposta
+    res.send(itens);
+  })
 
+  // Endpoint Read By ID -> [GET] /item/:id
+  app.get('/item/:id', async function (req, res) {
+    // Acessamos o parâmetro de rota ID
+    const id = req.params.id;
 
+    // Acessamos o item na collection (usando o ObjectId)
+    // e colocamos na variável item
+    const item = await collection.findOne({ _id: new ObjectId(id) });
 
-//endpoint Read By ID => GET /item/:id
-app.get('/item/:id', function(req, res){
-  const id = req.params.id;
-  const item = lista[id - 1];
-  res.send(item);
-});
+    // Enviamos para a resposta o item acessado
+    res.send(item);
+  })
 
+  
 
+  // Endpoint Create -> [POST] /item
+  app.post('/item', async function (req, res) {
+    // Pegamos o item através do corpo da requisição
+    const item = req.body;
 
-//endpoint Create => POST /item
-app.post('/item', function(req, res){
-  const item = req.body.nome;
-  lista.push(item);
-  res.send("Item adicionado com sucesso " + item);
-});
+    // Adicionamos o item obtido na collection
+    await collection.insertOne(item);
 
+    // Exibimos o item adicionado
+    res.send(item);
+  })
 
+  // Endpoint Update -> [PUT] /item/:id
+  app.put('/item/:id', function (req, res) {
+    // Obtemos o ID do parâmetro de rota
+    const id = req.params.id;
 
-//endpoint Update => PUT /item/:id
-app.put('/item/:id', function(req, res){
-  const id = req.params.id;
-  const novoItem = req.body.nome;
-  lista[id - 1] = novoItem;
-  res.send("Item atualizado com sucesso " + id + ". " + novoItem)
-});
+    // Obtemos o corpo da requisição para saber qual o novo valor
+    const novoItem = req.body;
 
+    // Atualizamos o item na collection
+    collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: novoItem }
+    )
 
+    // Enviamos uma mensagem de sucesso
+    res.send('Item atualizado com sucesso: ' + id);
+  })
 
-//endpoint DELETE => /item/:id
-app.delete('/item/:id', function(req, res){
-  const id = req.params.id;
-  delete lista[id - 1];
-  /*o método abaixo remove o elemento do array, corrige o problema do 'null', mas para utiliza-lo não se deve usar o método delete antes, escolha, ou um ou outro */
-  //lista.splice(id - 1, 1);  
-  res.send("Item removido com sucesso " + id)
-});
+  // Endpoint Delete -> [DELETE] /item/:id
+  app.delete('/item/:id', async function (req, res) {
+    // Obtemos o ID do parâmetro de rota
+    const id = req.params.id;
 
+    // Removemos o item da collection
+    await collection.deleteOne({ _id: new ObjectId(id) });
 
+    // Exibimos uma mensagem de sucesso
+    res.send('Item removido com sucesso: ' + id);
+  })
 
-app.listen(8000);
+  app.listen(3000)
+}
+
+main()
