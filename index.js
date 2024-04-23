@@ -75,6 +75,12 @@ async function main() {
     res.send('Item atualizado com sucesso: ' + id);
   })
 
+  //NOTA: 
+// collection.updateOne({ _id: new ObjectId(id) }, { $set: novoItem }): Aqui, estamos atualizando o item na coleção MongoDB. Estamos dizendo ao MongoDB para encontrar um documento na coleção que tenha um ‘_id’ que corresponda ao ‘id’ que obtivemos dos parâmetros da rota e atualizar esse documento para ter o novo valor que obtivemos do corpo da solicitação.
+
+// O new ObjectId(id) é usado para converter a string ‘id’ em um ObjectId do MongoDB, que é o tipo de dado usado pelo MongoDB para os IDs dos documentos. Isso é necessário porque o MongoDB não pode comparar diretamente strings com ObjectIds. 
+
+
 
 
   // Endpoint Delete -> [DELETE] /item/:id
