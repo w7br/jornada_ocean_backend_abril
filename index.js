@@ -52,17 +52,21 @@ async function main() {
     // Pegamos o item através do corpo da requisição
     const item = req.body;
 
+    if(!item.nome){
+      return res.status(400).send("campo de requisição sem o campo 'nome'")
+    }
+
     // Adicionamos o item obtido na collection
     await collection.insertOne(item);
 
     // Exibimos o item adicionado
-    res.send(item);
+    res.status(201).send(item);
   })
 
 
 
   // Endpoint Update -> [PUT] /item/:id
-  app.put('/item/:id', function (req, res) {
+  app.put('/item/:id', async function (req, res) {
     // Obtemos o ID do parâmetro de rota
     const id = req.params.id;
 
@@ -70,10 +74,14 @@ async function main() {
     const novoItem = req.body;
 
     // Atualizamos o item na collection
-    collection.updateOne(
+    const updateResult = await collection.updateOne(
       { _id: new ObjectId(id) },
       { $set: novoItem }
     )
+    
+    if(updateResult.matchedCount === 0){
+      return res.status(404).send("item não encontrado")
+    }
 
     // Enviamos uma mensagem de sucesso
     res.send('Item atualizado com sucesso: ' + id);
@@ -93,7 +101,11 @@ async function main() {
     const id = req.params.id;
 
     // Removemos o item da collection
-    await collection.deleteOne({ _id: new ObjectId(id) });
+    const deleteResult = await collection.deleteOne({ _id: new ObjectId(id) });
+
+    if(deleteResult.deletedCount === 0){
+      return res.status(404).send("Item não encontrado")
+    }
 
     // Exibimos uma mensagem de sucesso
     res.send('Item removido com sucesso: ' + id);
