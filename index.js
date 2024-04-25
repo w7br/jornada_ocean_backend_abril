@@ -28,7 +28,6 @@ async function main() {
   })
 
 
-
   // Endpoint Read By ID -> [GET] /item/:id
   app.get('/item/:id', async function (req, res) {
     // Acessamos o parâmetro de rota ID
